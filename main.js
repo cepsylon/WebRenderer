@@ -1,7 +1,12 @@
+import { dbzFactoryGL } from "./dbzFactoryGL.js"
+import { dbzShader, SHADER_TYPE } from "./dbzShader.js";
 
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById('mainCanvas');
 var gl = canvas.getContext('webgl2');
+
+var glFactory = new dbzFactoryGL(gl);
+
 //var error = gl.getError();
 var vao = gl.createVertexArray();
 gl.bindVertexArray(vao);
@@ -41,11 +46,7 @@ var vsData =
     'gl_Position = vec4(v_position, 0.0f, 1.0f);' +
     'f_color = v_color;' +
 '}'
-
-var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-gl.shaderSource(vertexShader, vsData);
-gl.compileShader(vertexShader);
-var error_string = gl.getShaderInfoLog(vertexShader);
+var vertexShader = glFactory.CreateShader(vsData, SHADER_TYPE.vertex);
 
 var fsData =
 '#version 300 es\n' +
@@ -57,14 +58,11 @@ var fsData =
     'o_color = f_color;' +
 '}'
 
-var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-gl.shaderSource(fragmentShader, fsData);
-gl.compileShader(fragmentShader);
-//error_string = gl.getShaderInfoLog(fragmentShader);
+var fragmentShader = glFactory.CreateShader(fsData, SHADER_TYPE.fragment);
 
 var shader = gl.createProgram();
-gl.attachShader(shader, vertexShader);
-gl.attachShader(shader, fragmentShader);
+gl.attachShader(shader, vertexShader.Id);
+gl.attachShader(shader, fragmentShader.Id);
 gl.linkProgram(shader);
 
 //error_string = gl.getProgramInfoLog(shader);
