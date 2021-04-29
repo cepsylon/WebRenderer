@@ -28,9 +28,19 @@ class dbzFactoryGL
     return this.CreateShader(data);
   }
 
+  DestroyShader(shader)
+  {
+    this._gl.deleteShader(shader.Id);
+  }
+
   CreateProgram(shaders)
   {
     return new dbzProgram(this._gl, shaders);
+  }
+
+  DestroyProgram(program)
+  {
+    this._gl.deleteProgram(program.Id);
   }
 }
 

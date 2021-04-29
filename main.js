@@ -1,16 +1,10 @@
-import { dbzFactoryGL } from './dbzFactoryGL.js'
 import { dbzShader, SHADER_TYPE } from './dbzShader.js';
 import { dbzProgram } from './dbzProgram.js'
+import { dbzAttributeLayout, dbzMesh } from './dbzMesh.js'
 
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById('mainCanvas');
 var gl = canvas.getContext('webgl2');
-
-var glFactory = new dbzFactoryGL(gl);
-
-//var error = gl.getError();
-var vao = gl.createVertexArray();
-gl.bindVertexArray(vao);
 
 var vertexData =
 [
@@ -19,23 +13,14 @@ var vertexData =
     0.5, -0.5, 0.0, 0.0, 1.0, 1.0,
     0.5, 0.5, 1.0, 1.0, 1.0, 1.0
 ];
-var vertexBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexData), gl.STATIC_DRAW);
-
-gl.enableVertexAttribArray(0);
-gl.vertexAttribPointer(0, 2, gl.FLOAT, 0, 24, 0);
-gl.enableVertexAttribArray(1);
-gl.vertexAttribPointer(1, 4, gl.FLOAT, 0, 24, 8);
-
 var indexData =
 [
     0, 1, 2,
     0, 2, 3
 ];
-var indexBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indexData), gl.STATIC_DRAW);
+var attributeLayout = [ new dbzAttributeLayout(0, 2, 24, 0), new dbzAttributeLayout(1, 4, 24, 8) ];
+var mesh = new dbzMesh(gl, vertexData, attributeLayout, indexData);
+mesh.Bind();
 
 var vsData =
 '#version 300 es\n' +
@@ -47,7 +32,7 @@ var vsData =
     'gl_Position = vec4(v_position, 0.0f, 1.0f);' +
     'f_color = v_color;' +
 '}'
-var vertexShader = glFactory.CreateShader(vsData, SHADER_TYPE.vertex);
+var vertexShader = new dbzShader(gl, vsData, SHADER_TYPE.vertex);
 
 var fsData =
 '#version 300 es\n' +
@@ -58,9 +43,9 @@ var fsData =
 '{' +
     'o_color = f_color;' +
 '}'
-var fragmentShader = glFactory.CreateShader(fsData, SHADER_TYPE.fragment);
+var fragmentShader = new dbzShader(gl, fsData, SHADER_TYPE.fragment);
 
-var program = glFactory.CreateProgram([vertexShader, fragmentShader]);
+var program = new dbzProgram(gl, [vertexShader, fragmentShader]);
 program.Use();
 
 function update(dt)
