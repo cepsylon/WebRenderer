@@ -1,5 +1,6 @@
-import { dbzFactoryGL } from "./dbzFactoryGL.js"
-import { dbzShader, SHADER_TYPE } from "./dbzShader.js";
+import { dbzFactoryGL } from './dbzFactoryGL.js'
+import { dbzShader, SHADER_TYPE } from './dbzShader.js';
+import { dbzProgram } from './dbzProgram.js'
 
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById('mainCanvas');
@@ -57,17 +58,10 @@ var fsData =
 '{' +
     'o_color = f_color;' +
 '}'
-
 var fragmentShader = glFactory.CreateShader(fsData, SHADER_TYPE.fragment);
 
-var shader = gl.createProgram();
-gl.attachShader(shader, vertexShader.Id);
-gl.attachShader(shader, fragmentShader.Id);
-gl.linkProgram(shader);
-
-//error_string = gl.getProgramInfoLog(shader);
-
-gl.useProgram(shader);
+var program = glFactory.CreateProgram([vertexShader, fragmentShader]);
+program.Use();
 
 function update(dt)
 {

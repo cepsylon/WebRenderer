@@ -1,4 +1,5 @@
 import { dbzShader } from './dbzShader.js'
+import { dbzProgram } from './dbzProgram.js'
 
 async function LoadFile(filePath)
 {
@@ -25,6 +26,11 @@ class dbzFactoryGL
   {
     const data = LoadFile(filePath);
     return this.CreateShader(data);
+  }
+
+  CreateProgram(shaders)
+  {
+    return new dbzProgram(this._gl, shaders);
   }
 }
 
